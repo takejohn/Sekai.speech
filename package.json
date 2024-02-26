@@ -1,0 +1,19 @@
+{
+    "name": "sekai.speech",
+    "description": "Yet another text-to-speech bot.",
+    "main": "index.ts",
+    "repository": "https://github.com/takejohn/Sekai.speech.git",
+    "author": "Take-John",
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+        "@types/node": "^20.11.20",
+        "discord.js": "^14.14.1",
+        "dotenv": "^16.4.5",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    },
+    "devDependencies": {
+        "prettier": "^3.2.5"
+    }
+}
