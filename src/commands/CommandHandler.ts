@@ -1,7 +1,7 @@
 import { Client, CommandInteraction } from "discord.js";
 import { Command } from "./Command";
 
-export class CommandManager {
+export class CommandHandler {
     private readonly commandMap = new Map<string, Command>();
 
     constructor(public readonly client: Client) {}

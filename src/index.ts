@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';
 import { VoicevoxClient } from './voicevox/VoicevoxClient';
 import { CommandConnect } from './commands/CommandConnect';
-import { CommandManager as CommandHandler } from './commands/CommandManager';
+import { CommandHandler } from './commands/CommandHandler';
 
 const client = new Client({
     intents: [
