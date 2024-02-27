@@ -2,7 +2,6 @@ import {
     SlashCommandBuilder,
     CommandInteraction,
     CacheType,
-    GuildMember,
     VoiceBasedChannel,
 } from 'discord.js';
 import { VoiceChannelCommand } from './VoiceChannelCommand';
@@ -17,7 +16,13 @@ export class CommandConnect extends VoiceChannelCommand {
         interaction: CommandInteraction<CacheType>,
         channel: VoiceBasedChannel,
     ) => {
-        ConnectionMap.forClient(interaction.client).join(channel);
+        const textChannel = interaction.channel;
+        if (textChannel == null || textChannel.isDMBased()) {
+            return;
+        }
+        ConnectionMap.forClient(interaction.client)
+            .join(channel)
+            .addTextChannel(textChannel);
         await interaction.reply(`\`${channel.name}\`に接続しました`);
     };
 }

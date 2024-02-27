@@ -4,6 +4,7 @@ import { VoicevoxClient } from './voicevox/VoicevoxClient';
 import { CommandConnect } from './commands/CommandConnect';
 import { CommandHandler } from './commands/CommandHandler';
 import { CommandDisconnect } from './commands/CommandDisconnect';
+import { ConnectionMap } from './connection/ConnectionMap';
 
 const client = new Client({
     intents: [
@@ -16,9 +17,7 @@ const client = new Client({
 
 const commandHandler = new CommandHandler(client);
 
-const voicevoxClient = new VoicevoxClient(
-    `http://localhost:${process.env.VOICEVOX_PORT}`,
-);
+const connectionMap = ConnectionMap.forClient(client);
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user?.tag}`);
@@ -28,15 +27,10 @@ client.on('ready', async () => {
 });
 
 client.on('messageCreate', async (message) => {
-    const text = message.content.trim();
-    if (text == '') {
+    if (!message.inGuild()) {
         return;
     }
-    const query = await voicevoxClient.getAudioQuery(text, 1);
-    const buffer = Buffer.from(await voicevoxClient.synthesize(query, 1));
-    await message.reply({
-        files: [new AttachmentBuilder(buffer).setName('audio.wav')],
-    });
+    await connectionMap.handleMessage(message);
 });
 
 client.on('interactionCreate', async (interaction) => {

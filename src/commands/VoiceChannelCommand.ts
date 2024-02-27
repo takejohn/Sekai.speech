@@ -13,7 +13,11 @@ export abstract class VoiceChannelCommand implements Command {
     execute = async (interaction: CommandInteraction) => {
         const member = interaction.member;
         const guild = interaction.guild;
-        if (!(member instanceof GuildMember) || guild == null) {
+        if (
+            !(member instanceof GuildMember) ||
+            guild == null ||
+            !interaction.inGuild()
+        ) {
             await interaction.reply(
                 'このコマンドはサーバーのみで使用できます！',
             );
@@ -42,7 +46,7 @@ export abstract class VoiceChannelCommand implements Command {
     };
 
     abstract executeWith(
-        interaction: CommandInteraction,
+        interaction: CommandInteraction<Exclude<CacheType, undefined>>,
         channel: VoiceBasedChannel,
     ): Promise<void>;
 }

@@ -1,16 +1,21 @@
-import { VoiceConnection, joinVoiceChannel } from '@discordjs/voice';
 import {
-    ChannelResolvable,
     Client,
     GuildResolvable,
+    Message,
     VoiceBasedChannel,
 } from 'discord.js';
-import { requireChannel } from '../util/channels';
+import { requireGuild } from '../util/guilds';
+import { Connection } from './Connection';
+import { VoicevoxClient } from '../voicevox/VoicevoxClient';
 
 export class ConnectionMap {
     private static readonly instances = new Map<Client, ConnectionMap>();
 
-    private readonly connections = new Map<string, VoiceConnection>();
+    private readonly connections = new Map<string, Connection>();
+
+    private readonly voicevoxClient = new VoicevoxClient(
+        `http://localhost:${process.env.VOICEVOX_PORT}`,
+    );
 
     private constructor(public readonly client: Client) {}
 
@@ -24,29 +29,31 @@ export class ConnectionMap {
         return created;
     }
 
-    get(channel: ChannelResolvable) {
-        const channelId = requireChannel(this.client.channels, channel).id;
-        return this.connections.get(channelId) ?? null;
+    get(guild: GuildResolvable) {
+        const guildId = requireGuild(this.client.guilds, guild).id;
+        return this.connections.get(guildId) ?? null;
     }
 
     join(channel: VoiceBasedChannel) {
         const guild = channel.guild;
-        const connection = joinVoiceChannel({
-            channelId: channel.id,
-            guildId: guild.id,
-            adapterCreator: guild.voiceAdapterCreator,
-        });
-        this.connections.set(channel.id, connection);
+        this.destroyConnection(guild);
+        const connection = new Connection(channel, this.voicevoxClient);
+        this.connections.set(guild.id, connection);
+        return connection;
     }
 
-    destroyConnection(channel: ChannelResolvable) {
-        const channelId = requireChannel(this.client.channels, channel).id;
-        const connection = this.connections.get(channelId);
+    destroyConnection(guild: GuildResolvable) {
+        const guildResolved = requireGuild(this.client.guilds, guild);
+        const connection = this.get(guild);
         if (connection == null) {
             return false;
         }
         connection.destroy();
-        this.connections.delete(channelId);
+        this.connections.delete(guildResolved.id);
         return true;
+    }
+
+    async handleMessage(message: Message<true>) {
+        await this.get(message.guild)?.handleMessage(message);
     }
 }
