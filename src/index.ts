@@ -3,6 +3,7 @@ import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';
 import { VoicevoxClient } from './voicevox/VoicevoxClient';
 import { CommandConnect } from './commands/CommandConnect';
 import { CommandHandler } from './commands/CommandHandler';
+import { CommandDisconnect } from './commands/CommandDisconnect';
 
 const client = new Client({
     intents: [
@@ -22,6 +23,7 @@ const voicevoxClient = new VoicevoxClient(
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user?.tag}`);
     commandHandler.addCommand(new CommandConnect());
+    commandHandler.addCommand(new CommandDisconnect());
     await commandHandler.registerAll();
 });
 
@@ -41,6 +43,6 @@ client.on('interactionCreate', async (interaction) => {
     if (interaction.isCommand()) {
         commandHandler.handle(interaction);
     }
-})
+});
 
 client.login(process.env.DISCORD_TOKEN);

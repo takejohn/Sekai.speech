@@ -1,29 +1,23 @@
-import { SlashCommandBuilder, CommandInteraction, CacheType, GuildMember } from "discord.js";
-import { Command } from "./Command";
-import { joinVoiceChannel } from "@discordjs/voice";
+import {
+    SlashCommandBuilder,
+    CommandInteraction,
+    CacheType,
+    GuildMember,
+    VoiceBasedChannel,
+} from 'discord.js';
+import { VoiceChannelCommand } from './VoiceChannelCommand';
+import { ConnectionMap } from '../connection/ConnectionMap';
 
-export class CommandConnect implements Command {
+export class CommandConnect extends VoiceChannelCommand {
     data = new SlashCommandBuilder()
         .setName('connect')
         .setDescription('ボイスチャンネルに接続します');
 
-    execute = async (interaction: CommandInteraction<CacheType>) => {
-        const member = interaction.member;
-        const guild = interaction.guild;
-        if (!(member instanceof GuildMember) || guild == null) {
-            await interaction.reply('このコマンドはサーバーのみで使用できます！');
-            return;
-        }
-        const channel = member.voice.channel;
-        if (channel == null) {
-            await interaction.reply('このコマンドはボイスチャンネルに接続してから実行してください！');
-            return;
-        }
-        const connection = joinVoiceChannel({
-            channelId: channel.id,
-            guildId: guild.id,
-            adapterCreator: channel.guild.voiceAdapterCreator
-        });
+    executeWith = async (
+        interaction: CommandInteraction<CacheType>,
+        channel: VoiceBasedChannel,
+    ) => {
+        ConnectionMap.forClient(interaction.client).join(channel);
         await interaction.reply(`\`${channel.name}\`に接続しました`);
-    }
+    };
 }

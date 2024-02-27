@@ -1,5 +1,5 @@
-import { Client, CommandInteraction } from "discord.js";
-import { Command } from "./Command";
+import { Client, CommandInteraction } from 'discord.js';
+import { Command } from './Command';
 
 export class CommandHandler {
     private readonly commandMap = new Map<string, Command>();
@@ -22,7 +22,9 @@ export class CommandHandler {
         const commandName = interaction.commandName;
         const command = this.commandMap.get(commandName);
         if (command == null) {
-            await interaction.reply(`コマンド\`${commandName}\`が見つかりません！`);
+            await interaction.reply(
+                `コマンド\`${commandName}\`が見つかりません！`,
+            );
             return;
         }
         await command.execute(interaction);
