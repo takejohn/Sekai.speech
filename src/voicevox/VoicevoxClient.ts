@@ -4,10 +4,10 @@ import { ValidationError } from './ValidationError';
 
 async function castResponse<T>(res: Response): Promise<T> {
     if (res.ok) {
-        return await res.json();
+        return (await res.json()) as T;
     }
     if (res.status == 422) {
-        throw new ValidationError(await res.json());
+        throw new ValidationError((await res.json()) as { detail: Object[] });
     }
     throw new ResponseError(res.status, await res.json());
 }
@@ -41,18 +41,17 @@ export class VoicevoxClient {
         body?: unknown,
         acceptType?: string,
     ) {
-        const headers: HeadersInit =
-            acceptType != null
-                ? {
-                      'Content-Type': 'application/json',
-                      Accept: acceptType,
-                  }
-                : {
-                      'Content-Type': 'application/json',
-                  };
         return await fetch(`${this.baseUrl}${endpoint}?${params}`, {
             method: 'POST',
-            headers,
+            headers:
+                acceptType != null
+                    ? {
+                          'Content-Type': 'application/json',
+                          Accept: acceptType,
+                      }
+                    : {
+                          'Content-Type': 'application/json',
+                      },
             body: JSON.stringify(body),
         });
     }
