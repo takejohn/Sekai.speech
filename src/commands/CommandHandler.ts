@@ -1,4 +1,4 @@
-import { Client, CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, Client } from 'discord.js';
 import { Command } from './Command';
 
 export class CommandHandler {
@@ -6,8 +6,10 @@ export class CommandHandler {
 
     constructor(public readonly client: Client) {}
 
-    addCommand(command: Command) {
-        this.commandMap.set(command.data.name, command);
+    addCommands(...commands: Command[]) {
+        for (const command of commands) {
+            this.commandMap.set(command.data.name, command);
+        }
     }
 
     async registerAll() {
@@ -18,7 +20,7 @@ export class CommandHandler {
         await this.client.application?.commands.set(commandData);
     }
 
-    async handle(interaction: CommandInteraction) {
+    async handle(interaction: ChatInputCommandInteraction) {
         const commandName = interaction.commandName;
         const command = this.commandMap.get(commandName);
         if (command == null) {

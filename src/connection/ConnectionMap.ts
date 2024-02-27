@@ -34,10 +34,13 @@ export class ConnectionMap {
         return this.connections.get(guildId) ?? null;
     }
 
-    join(channel: VoiceBasedChannel) {
+    async join(channel: VoiceBasedChannel) {
         const guild = channel.guild;
         this.destroyConnection(guild);
-        const connection = new Connection(channel, this.voicevoxClient);
+        const connection = await Connection.create(
+            channel,
+            this.voicevoxClient,
+        );
         this.connections.set(guild.id, connection);
         return connection;
     }

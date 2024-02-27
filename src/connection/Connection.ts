@@ -4,13 +4,10 @@ import {
     createAudioResource,
     joinVoiceChannel,
 } from '@discordjs/voice';
-import {
-    GuildTextBasedChannel,
-    Message,
-    VoiceBasedChannel,
-} from 'discord.js';
+import { GuildTextBasedChannel, Message, VoiceBasedChannel } from 'discord.js';
 import { VoicevoxClient } from '../voicevox/VoicevoxClient';
 import { Readable } from 'stream';
+import { Filter } from '../filter/Filter';
 
 export class Connection {
     private readonly voice: VoiceConnection;
@@ -19,9 +16,10 @@ export class Connection {
 
     private readonly player = createAudioPlayer();
 
-    constructor(
+    private constructor(
         readonly channel: VoiceBasedChannel,
         private readonly voicevox: VoicevoxClient,
+        private readonly filter: Filter,
     ) {
         const guild = channel.guild;
         this.voice = joinVoiceChannel({
@@ -30,6 +28,14 @@ export class Connection {
             adapterCreator: guild.voiceAdapterCreator,
         });
         this.voice.subscribe(this.player);
+    }
+
+    public static async create(
+        channel: VoiceBasedChannel,
+        voicevox: VoicevoxClient,
+    ) {
+        const filter = await Filter.get(channel.client, channel.guild);
+        return new Connection(channel, voicevox, filter);
     }
 
     addTextChannel(textChannel: GuildTextBasedChannel) {
@@ -44,8 +50,9 @@ export class Connection {
         if (!this.textChannels.has(message.channel.id)) {
             return;
         }
-        const text = message.content.trim();
-        if (text == '') {
+        const text = await this.filter.apply(message.content);
+        console.log(`before: '${message.content}', after: '${text}'`);
+        if (/^\s*$/.test(text)) {
             return;
         }
         const query = await this.voicevox.getAudioQuery(text, 1);

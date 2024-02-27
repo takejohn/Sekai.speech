@@ -20,9 +20,9 @@ export class CommandConnect extends VoiceChannelCommand {
         if (textChannel == null || textChannel.isDMBased()) {
             return;
         }
-        ConnectionMap.forClient(interaction.client)
-            .join(channel)
-            .addTextChannel(textChannel);
+        const connectionMap = ConnectionMap.forClient(interaction.client);
+        const connection = await connectionMap.join(channel);
+        connection.addTextChannel(textChannel);
         await interaction.reply(`\`${channel.name}\`に接続しました`);
     };
 }
