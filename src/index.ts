@@ -1,6 +1,5 @@
 import 'dotenv/config';
-import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';
-import { VoicevoxClient } from './voicevox/VoicevoxClient';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { CommandConnect } from './commands/CommandConnect';
 import { CommandHandler } from './commands/CommandHandler';
 import { CommandDisconnect } from './commands/CommandDisconnect';

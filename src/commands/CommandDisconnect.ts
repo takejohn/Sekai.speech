@@ -2,7 +2,6 @@ import {
     SlashCommandBuilder,
     CommandInteraction,
     CacheType,
-    GuildMember,
     VoiceBasedChannel,
 } from 'discord.js';
 import { ConnectionMap } from '../connection/ConnectionMap';

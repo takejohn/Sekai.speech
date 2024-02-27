@@ -1,4 +1,9 @@
-import { VoiceConnection, joinVoiceChannel } from '@discordjs/voice';
+import {
+    VoiceConnection,
+    createAudioPlayer,
+    createAudioResource,
+    joinVoiceChannel,
+} from '@discordjs/voice';
 import {
     AttachmentBuilder,
     GuildTextBasedChannel,
@@ -6,11 +11,14 @@ import {
     VoiceBasedChannel,
 } from 'discord.js';
 import { VoicevoxClient } from '../voicevox/VoicevoxClient';
+import { Readable } from 'stream';
 
 export class Connection {
     private readonly voice: VoiceConnection;
 
     private readonly textChannels = new Set<string>();
+
+    private readonly player = createAudioPlayer();
 
     constructor(
         readonly channel: VoiceBasedChannel,
@@ -22,6 +30,7 @@ export class Connection {
             guildId: guild.id,
             adapterCreator: guild.voiceAdapterCreator,
         });
+        this.voice.subscribe(this.player);
     }
 
     addTextChannel(textChannel: GuildTextBasedChannel) {
@@ -41,10 +50,11 @@ export class Connection {
             return;
         }
         const query = await this.voicevox.getAudioQuery(text, 1);
-        const buffer = Buffer.from(await this.voicevox.synthesize(query, 1));
-        await message.reply({
-            files: [new AttachmentBuilder(buffer).setName('audio.wav')],
-        });
+        const arrayBuffer = await this.voicevox.synthesize(query, 1);
+        const buffer = Buffer.from(arrayBuffer);
+        const readable = Readable.from(buffer);
+        const resource = createAudioResource(readable);
+        this.player.play(resource);
     }
 
     destroy() {

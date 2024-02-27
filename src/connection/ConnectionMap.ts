@@ -29,7 +29,7 @@ export class ConnectionMap {
         return created;
     }
 
-    get(guild: GuildResolvable) {
+    private get(guild: GuildResolvable) {
         const guildId = requireGuild(this.client.guilds, guild).id;
         return this.connections.get(guildId) ?? null;
     }
