@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { AttachmentBuilder, Client, GatewayIntentBits } from 'discord.js';
 import { VoicevoxClient } from './voicevox/VoicevoxClient';
+import { CommandConnect } from './commands/CommandConnect';
+import { CommandManager as CommandHandler } from './commands/CommandManager';
 
 const client = new Client({
     intents: [
@@ -11,12 +13,16 @@ const client = new Client({
     ],
 });
 
+const commandHandler = new CommandHandler(client);
+
 const voicevoxClient = new VoicevoxClient(
     `http://localhost:${process.env.VOICEVOX_PORT}`,
 );
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log(`Logged in as ${client.user?.tag}`);
+    commandHandler.addCommand(new CommandConnect());
+    await commandHandler.registerAll();
 });
 
 client.on('messageCreate', async (message) => {
@@ -30,5 +36,11 @@ client.on('messageCreate', async (message) => {
         files: [new AttachmentBuilder(buffer).setName('audio.wav')],
     });
 });
+
+client.on('interactionCreate', async (interaction) => {
+    if (interaction.isCommand()) {
+        commandHandler.handle(interaction);
+    }
+})
 
 client.login(process.env.DISCORD_TOKEN);
