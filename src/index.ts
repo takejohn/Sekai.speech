@@ -5,6 +5,7 @@ import { CommandHandler } from './commands/CommandHandler';
 import { CommandDisconnect } from './commands/CommandDisconnect';
 import { ConnectionMap } from './connection/ConnectionMap';
 import { CommandFilter } from './commands/CommandFilter';
+import mongoose from 'mongoose';
 
 const client = new Client({
     intents: [
@@ -42,11 +43,13 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
     connectionMap.destroy();
     console.log('Destroyed all connections');
-    client.destroy();
+    await client.destroy();
     console.log('Destroyed the client');
+    await mongoose.disconnect();
+    console.log('Closed the database connection');
 });
 
 client.login(process.env.DISCORD_TOKEN);

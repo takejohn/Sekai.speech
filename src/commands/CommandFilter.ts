@@ -38,7 +38,9 @@ export class CommandFilter implements Command {
     execute = async (interaction: ChatInputCommandInteraction) => {
         const guild = interaction.guild;
         if (guild == null) {
-            await interaction.reply('このコマンドはセーバー内でのみ使用できます！');
+            await interaction.reply(
+                'このコマンドはセーバー内でのみ使用できます！',
+            );
             return;
         }
         const filter = await Filter.get(interaction.client, guild);
@@ -51,7 +53,9 @@ export class CommandFilter implements Command {
                 await remove(interaction, filter);
                 break;
             default:
-                await interaction.reply(`不明なサブコマンドです: ${subcommand}`);
+                await interaction.reply(
+                    `不明なサブコマンドです: ${subcommand}`,
+                );
         }
     };
 }
