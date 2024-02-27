@@ -1,22 +1,28 @@
-import { SlashCommandBuilder, CommandInteraction, CacheType } from "discord.js";
-import { Command } from "./Command";
-import { Filter } from "../filter/Filter";
+import { SlashCommandBuilder, CommandInteraction, CacheType } from 'discord.js';
+import { Command } from './Command';
+import { Filter } from '../filter/Filter';
 
 export class CommandFilter implements Command {
     data = new SlashCommandBuilder()
         .setName('filter')
         .setDescription('フィルタを設定します')
-        .addSubcommand(subcommand => subcommand
-            .setName('add')
-            .setDescription('単語を追加します')
-            .addStringOption(option => option
-                .setName('input')
-                .setDescription('入力')
-                .setRequired(true))
-            .addStringOption(option => option
-                .setName('output')
-                .setDescription('出力')
-                .setRequired(true)));
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName('add')
+                .setDescription('単語を追加します')
+                .addStringOption((option) =>
+                    option
+                        .setName('input')
+                        .setDescription('入力')
+                        .setRequired(true),
+                )
+                .addStringOption((option) =>
+                    option
+                        .setName('output')
+                        .setDescription('出力')
+                        .setRequired(true),
+                ),
+        );
 
     execute = async (interaction: CommandInteraction<CacheType>) => {
         const guild = interaction.guild;
@@ -33,21 +39,33 @@ export class CommandFilter implements Command {
             case 'add':
                 {
                     const input = interaction.options.getString('input', true);
-                    const output = interaction.options.getString('output', true);
+                    const output = interaction.options.getString(
+                        'output',
+                        true,
+                    );
                     const success = await filter.addWord(input, output);
                     if (success) {
                         interaction.reply({
-                            embeds: [{
-                                title: '単語を追加しました',
-                                description: 'input: `' + input + '`\noutput: `' + output + '`'
-                            }]
+                            embeds: [
+                                {
+                                    title: '単語を追加しました',
+                                    description:
+                                        'input: `' +
+                                        input +
+                                        '`\noutput: `' +
+                                        output +
+                                        '`',
+                                },
+                            ],
                         });
                     } else {
                         interaction.reply({
-                            embeds: [{
-                                title: 'その単語はすでに追加されています！',
-                                description: 'input: `' + input + '`'
-                            }]
+                            embeds: [
+                                {
+                                    title: 'その単語はすでに追加されています！',
+                                    description: 'input: `' + input + '`',
+                                },
+                            ],
                         });
                     }
                 }
@@ -55,5 +73,5 @@ export class CommandFilter implements Command {
             default:
                 interaction.reply(`不明なサブコマンドです: ${subcommand}`);
         }
-    }
+    };
 }

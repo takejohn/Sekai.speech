@@ -36,11 +36,16 @@ export class Filter {
         this.cache = cache;
     }
 
-    public static async get(client: Client<true>, guild: GuildResolvable): Promise<Filter> {
+    public static async get(
+        client: Client<true>,
+        guild: GuildResolvable,
+    ): Promise<Filter> {
         const clientUserId = client.user.id;
         let guildMap = this.instances.get(clientUserId);
         if (guildMap != null) {
-            const existing = this.instances.get(clientUserId)?.get(clientUserId);
+            const existing = this.instances
+                .get(clientUserId)
+                ?.get(clientUserId);
             if (existing != null) {
                 return existing;
             }
