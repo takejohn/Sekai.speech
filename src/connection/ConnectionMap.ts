@@ -53,6 +53,12 @@ export class ConnectionMap {
         return true;
     }
 
+    destroy() {
+        for (const guild of this.connections.keys()) {
+            this.destroyConnection(guild);
+        }
+    }
+
     async handleMessage(message: Message<true>) {
         await this.get(message.guild)?.handleMessage(message);
     }

@@ -5,7 +5,6 @@ import {
     joinVoiceChannel,
 } from '@discordjs/voice';
 import {
-    AttachmentBuilder,
     GuildTextBasedChannel,
     Message,
     VoiceBasedChannel,

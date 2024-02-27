@@ -38,4 +38,11 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
+process.on('SIGINT', () => {
+    connectionMap.destroy();
+    console.log('Destroyed all connections');
+    client.destroy();
+    console.log('Destroyed the client');
+});
+
 client.login(process.env.DISCORD_TOKEN);
