@@ -1,6 +1,7 @@
 import { Client, Guild, GuildResolvable } from 'discord.js';
 import { wordModel } from '../database/database';
 import { requireGuild } from '../util/guilds';
+import { getReplacer } from './Replacer';
 
 function findPrefix(
     candidates: readonly string[],
@@ -81,6 +82,11 @@ export class Filter {
         const cache = this.cache;
         const keys = [...cache.keys()];
         while (index < length) {
+            const replacer = getReplacer(input, index);
+            if (replacer != null) {
+                output += replacer.output;
+                index += replacer.input.length;
+            }
             const prefix = findPrefix(keys, input, index);
             if (prefix != null) {
                 output += cache.get(prefix);
