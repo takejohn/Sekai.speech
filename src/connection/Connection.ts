@@ -13,13 +13,14 @@ import {
 import { VoicevoxClient } from '../voicevox/VoicevoxClient';
 import { Readable } from 'stream';
 import { Filter } from '../filter/Filter';
+import { QueuePlayer } from './QueuePlayer';
 
 export class Connection {
     private readonly voice: VoiceConnection;
 
     private readonly textChannels = new Set<string>();
 
-    private readonly player = createAudioPlayer();
+    private readonly queuePlayer = new QueuePlayer(createAudioPlayer());
 
     private constructor(
         readonly channel: VoiceBasedChannel,
@@ -32,7 +33,7 @@ export class Connection {
             guildId: guild.id,
             adapterCreator: guild.voiceAdapterCreator,
         });
-        this.voice.subscribe(this.player);
+        this.voice.subscribe(this.queuePlayer.player);
     }
 
     public static async create(
@@ -69,7 +70,7 @@ export class Connection {
         const buffer = Buffer.from(arrayBuffer);
         const readable = Readable.from(buffer);
         const resource = createAudioResource(readable);
-        this.player.play(resource);
+        this.queuePlayer.play(resource);
     }
 
     async handleVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
