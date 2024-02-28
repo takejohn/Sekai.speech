@@ -50,7 +50,7 @@ export class Connection {
         if (!this.textChannels.has(message.channel.id)) {
             return;
         }
-        const text = await this.filter.apply(message.content);
+        const text = await this.filter.apply(message.cleanContent);
         console.log(`before: '${message.content}', after: '${text}'`);
         if (/^\s*$/.test(text)) {
             return;
