@@ -82,18 +82,19 @@ export class Filter {
         const cache = this.cache;
         const keys = [...cache.keys()];
         while (index < length) {
-            const replacer = getReplacer(input, index);
-            if (replacer != null) {
-                output += replacer.output;
-                index += replacer.input.length;
-            }
             const prefix = findPrefix(keys, input, index);
             if (prefix != null) {
                 output += cache.get(prefix);
                 index += prefix.length;
             } else {
-                output += input.charAt(index);
-                index++;
+                const replacer = getReplacer(input.substring(index));
+                if (replacer != null) {
+                    output += replacer.output;
+                    index += replacer.input.length;
+                } else {
+                    output += input.charAt(index);
+                    index++;
+                }
             }
         }
         return output;
