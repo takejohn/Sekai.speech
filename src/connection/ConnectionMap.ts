@@ -3,6 +3,7 @@ import {
     GuildResolvable,
     Message,
     VoiceBasedChannel,
+    VoiceState,
 } from 'discord.js';
 import { requireGuild } from '../util/guilds';
 import { Connection } from './Connection';
@@ -64,5 +65,27 @@ export class ConnectionMap {
 
     async handleMessage(message: Message<true>) {
         await this.get(message.guild)?.handleMessage(message);
+    }
+
+    async handleVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+        const oldStateGuild = oldState.guild;
+        const newStateGuild = newState.guild;
+        if (oldStateGuild == newStateGuild) {
+            await this.get(oldStateGuild)?.handleVoiceStateUpdate(
+                oldState,
+                newState,
+            );
+        } else {
+            await Promise.all([
+                this.get(oldStateGuild)?.handleVoiceStateUpdate(
+                    oldState,
+                    newState,
+                ),
+                this.get(newStateGuild)?.handleVoiceStateUpdate(
+                    oldState,
+                    newState,
+                ),
+            ]);
+        }
     }
 }

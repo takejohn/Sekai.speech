@@ -4,7 +4,12 @@ import {
     createAudioResource,
     joinVoiceChannel,
 } from '@discordjs/voice';
-import { GuildTextBasedChannel, Message, VoiceBasedChannel } from 'discord.js';
+import {
+    GuildTextBasedChannel,
+    Message,
+    VoiceBasedChannel,
+    VoiceState,
+} from 'discord.js';
 import { VoicevoxClient } from '../voicevox/VoicevoxClient';
 import { Readable } from 'stream';
 import { Filter } from '../filter/Filter';
@@ -52,6 +57,10 @@ export class Connection {
         }
         const text = await this.filter.apply(message.cleanContent);
         console.log(`before: '${message.content}', after: '${text}'`);
+        this.speech(text);
+    }
+
+    async speech(text: string) {
         if (/^\s*$/.test(text)) {
             return;
         }
@@ -61,6 +70,23 @@ export class Connection {
         const readable = Readable.from(buffer);
         const resource = createAudioResource(readable);
         this.player.play(resource);
+    }
+
+    async handleVoiceStateUpdate(oldState: VoiceState, newState: VoiceState) {
+        const channel = this.channel;
+        const member = oldState.member;
+        if (member == null) {
+            return;
+        }
+        if (newState.channel?.id == channel.id) {
+            this.speech(
+                `${member.user.tag}さんが${channel.name}に接続しました`,
+            );
+        } else if (oldState.channel?.id == channel.id) {
+            this.speech(
+                `${member.user.tag}さんが${channel.name}から切断しました`,
+            );
+        }
     }
 
     destroy() {

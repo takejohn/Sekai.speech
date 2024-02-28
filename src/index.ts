@@ -43,6 +43,13 @@ client.on('interactionCreate', async (interaction) => {
     }
 });
 
+client.on('voiceStateUpdate', async (oldState, newState) => {
+    if (oldState.member?.user.id == client.user?.id) {
+        return;
+    }
+    connectionMap.handleVoiceStateUpdate(oldState, newState);
+});
+
 process.on('SIGINT', async () => {
     connectionMap.destroy();
     console.log('Destroyed all connections');
