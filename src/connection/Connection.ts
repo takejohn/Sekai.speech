@@ -57,7 +57,6 @@ export class Connection {
             return;
         }
         const text = await this.filter.apply(message.cleanContent);
-        console.log(`before: '${message.content}', after: '${text}'`);
         this.speech(text);
     }
 
