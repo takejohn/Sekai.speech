@@ -80,11 +80,11 @@ export class Connection {
         }
         if (newState.channel?.id == channel.id) {
             this.speech(
-                `${member.user.tag}さんが${channel.name}に接続しました`,
+                `${member.nickname}さんが${channel.name}に接続しました`,
             );
         } else if (oldState.channel?.id == channel.id) {
             this.speech(
-                `${member.user.tag}さんが${channel.name}から切断しました`,
+                `${member.nickname}さんが${channel.name}から切断しました`,
             );
         }
     }
