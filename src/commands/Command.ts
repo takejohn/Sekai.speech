@@ -1,6 +1,5 @@
 import {
     ChatInputCommandInteraction,
-    RESTPostAPIChatInputApplicationCommandsJSONBody,
     SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
 
