@@ -16,7 +16,8 @@
         "mongoose": "^8.2.0",
         "sodium": "^3.0.2",
         "ts-node": "^10.9.2",
-        "typescript": "^5.3.3"
+        "typescript": "^5.3.3",
+        "voicevox_core": "./voicevox_core/crates/voicevox_core_node_api"
     },
     "devDependencies": {
         "prettier": "^3.2.5"

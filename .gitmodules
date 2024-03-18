@@ -1,0 +1,4 @@
+[submodule "voicevox_core"]
+	path = voicevox_core
+	url = https://github.com/takejohn/voicevox_core.git
+	branch = feature/550-ffi-napi-rs
