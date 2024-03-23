@@ -1,11 +1,14 @@
 {
     "name": "sekai.speech",
     "description": "Yet another text-to-speech bot.",
-    "main": "index.ts",
+    "main": "src/index.ts",
     "repository": "https://github.com/takejohn/Sekai.speech.git",
     "author": "Take-John",
     "license": "MIT",
     "private": true,
+    "scripts": {
+        "start": "ts-node ."
+    },
     "dependencies": {
         "@discordjs/opus": "^0.9.0",
         "@discordjs/voice": "^0.16.1",
